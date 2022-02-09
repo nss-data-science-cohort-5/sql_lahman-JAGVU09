@@ -1,0 +1,32 @@
+/*
+1. Find all players in the database who played at Vanderbilt University. 
+Create a list showing each player's first and last names as well as the 
+total salary they earned in the major leagues. Sort this list in descending 
+order by the total salary earned. Which Vanderbilt player earned the most money in the majors?
+*/
+SELECT PEOPLE.NAMEFIRST || ' ' || PEOPLE.NAMELAST AS PLAYER_NAME,
+	SUM(SALARIES.SALARY) AS TOTAL_SALARY,
+	SCHOOLS.SCHOOLNAME
+FROM PEOPLE
+INNER JOIN SALARIES ON SALARIES.PLAYERID = PEOPLE.PLAYERID
+INNER JOIN COLLEGEPLAYING ON COLLEGEPLAYING.PLAYERID = PEOPLE.PLAYERID
+INNER JOIN SCHOOLS ON SCHOOLS.SCHOOLID = COLLEGEPLAYING.SCHOOLID
+WHERE SCHOOLNAME = 'Vanderbilt University'
+GROUP BY PEOPLE.NAMEFIRST, PEOPLE.NAMELAST, SCHOOLS.SCHOOLNAME
+ORDER BY TOTAL_SALARY DESC;
+
+/*
+2. Using the fielding table, group players into three groups based on their position:
+label players with position OF as "Outfield", those with position "SS", "1B", "2B", 
+and "3B" as "Infield", and those with position "P" or "C" as "Battery".
+Determine the number of putouts made by each of these three groups in 2016.
+*/
+SELECT distinct pos
+FROM FIELDING;
+
+SELECT PEOPLE.NAMEFIRST || ' ' || PEOPLE.NAMELAST AS PLAYER_NAME,
+CASE WHEN POS = 'OF' THEN 'Outfield'
+WHEN POS = 'SS' OR POS ='1B' OR POS ='2B' OR POS ='3B' THEN 'Infield'
+ELSE 'Battery' END AS positions
+FROM PEOPLE
+INNER JOIN FIELDING ON PEOPLE.PLAYERID = FIELDING.PLAYERID
